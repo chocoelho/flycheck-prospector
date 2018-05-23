@@ -1,11 +1,11 @@
 ;;; flycheck-prospector.el --- Support prospector in flycheck
 
-;; Copyright (C) 2014 Wilfred Hughes <me@wilfred.me.uk>
+;; Copyright (C) 2018 Carlos Coelho <carlospecter@gmail.com>
 ;;
-;; Author: Wilfred Hughes <me@wilfred.me.uk>
-;; Created: 29 April 2014
+;; Author: Carlos Coelho <carlospecter@gmail.com>
+;; Created: 23 May 2018
 ;; Version: 0.1
-;; Package-Requires: ((flycheck "0.18"))
+;; Package-Requires: ((flycheck "31"))
 
 ;;; Commentary:
 
