@@ -5,7 +5,7 @@
 ;; Author: Carlos Coelho <carlospecter@gmail.com>
 ;; Created: 23 May 2018
 ;; Version: 0.1
-;; Package-Requires: ((flycheck "31"))
+;; Package-Requires: ((flycheck "0.22"))
 
 ;;; Commentary:
 
@@ -52,7 +52,7 @@ To override the path to the prospector executable, set
 `flycheck-python-prospector-executable'.
 
 See URL `http://pypi.python.org/pypi/prospector'."
-  :command ("prospector" "-M" "-o" "emacs" source-inplace)
+  :command ("prospector" "-M" "-o" "emacs" source)
   :error-patterns
   ((error line-start
     (file-name) ":" (one-or-more digit) " :" (optional "\r") "\n"
@@ -69,20 +69,14 @@ See URL `http://pypi.python.org/pypi/prospector'."
     (one-or-more " ") "L" line ":" column
     (message (minimal-match (one-or-more not-newline)) (not digit) (one-or-more digit) (optional "\r") "\n"
       (one-or-more not-newline)) (optional "\r") "\n" line-end))
-  :modes python-mode
-  :predicate (lambda() (buffer-file-name)))
+  :modes python-mode)
 
-(defun flycheck-prospector-unsetup ()
-  "Utility function, used for testing only."
-  (interactive)
-  (setq flycheck-checkers (remove 'python-prospector flycheck-checkers)))
-
-;;; ###autoload
+;;;###autoload
 (defun flycheck-prospector-setup ()
-  "Convenience function to setup the prospector flycheck checker."
+  "Setup Flycheck Prospector.
+
+Add `prospector' to `flycheck-checkers'"
   (interactive)
-  ;; *Pre*pend this to 'flycheck-checkers, since we want to use this in
-  ;; *preference to all other checkers
   (add-to-list 'flycheck-checkers 'python-prospector))
 
 (provide 'flycheck-prospector)
