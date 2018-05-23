@@ -69,7 +69,8 @@ See URL `http://pypi.python.org/pypi/prospector'."
     (one-or-more " ") "L" line ":" column
     (message (minimal-match (one-or-more not-newline)) (not digit) (one-or-more digit) (optional "\r") "\n"
       (one-or-more not-newline)) (optional "\r") "\n" line-end))
-  :modes python-mode)
+  :modes python-mode
+  :predicate (lambda() (buffer-file-name)))
 
 (defun flycheck-prospector-unsetup ()
   "Utility function, used for testing only."
