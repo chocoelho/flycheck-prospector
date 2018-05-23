@@ -71,7 +71,18 @@ See URL `http://pypi.python.org/pypi/prospector'."
       (one-or-more not-newline)) (optional "\r") "\n" line-end))
   :modes python-mode)
 
-(add-to-list 'flycheck-checkers 'python-prospector)
+(defun flycheck-prospector-unsetup ()
+  "Utility function, used for testing only."
+  (interactive)
+  (setq flycheck-checkers (remove 'python-prospector flycheck-checkers)))
+
+;;; ###autoload
+(defun flycheck-prospector-setup ()
+  "Convenience function to setup the prospector flycheck checker."
+  (interactive)
+  ;; *Pre*pend this to 'flycheck-checkers, since we want to use this in
+  ;; *preference to all other checkers
+  (add-to-list 'flycheck-checkers 'python-prospector))
 
 (provide 'flycheck-prospector)
 ;;; flycheck-prospector.el ends here
