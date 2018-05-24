@@ -45,6 +45,7 @@
 ;;; Code:
 (require 'flycheck)
 
+
 (flycheck-define-checker python-prospector
   "A Python syntax and style checker using the prospector utility.
 
@@ -52,23 +53,30 @@ To override the path to the prospector executable, set
 `flycheck-python-prospector-executable'.
 
 See URL `http://pypi.python.org/pypi/prospector'."
-  :command ("prospector" "-M" "-o" "emacs" source)
+  :command ("prospector"
+            "-0" "-M" "-o" "emacs"
+            source-inplace)
   :error-patterns
   ((error line-start
-    (file-name) ":" (one-or-more digit) " :" (optional "\r") "\n"
+    (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
     (one-or-more " ") "L" line ":" column
-    (message (minimal-match (one-or-more not-newline)) "E" (one-or-more digit) (optional "\r") "\n"
+    (message (minimal-match (one-or-more not-newline)) (or "frosted" "pep8") "E" (one-or-more digit) (optional "\r") "\n"
+      (one-or-more not-newline)) (optional "\r") "\n" line-end)
+   (error line-start
+          (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
+          (one-or-more " ") "L" line ":" column
+          (message (minimal-match (one-or-more not-newline)) "pylint" (one-or-more not-newline) (optional "\r") "\n"
+                   (one-or-more " ") (one-or-more not-newline)) (optional "\r") "\n" line-end)
+   (warning line-start
+            (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") ":\n"
+    (one-or-more " ") "L" line ":" column
+    (message (minimal-match (one-or-more not-newline)) (or "frosted" "pep8") "W" (one-or-more digit) (optional "\r") "\n"
       (one-or-more not-newline)) (optional "\r") "\n" line-end)
    (warning line-start
-    (file-name) ":" (one-or-more digit) " :" (optional "\r") "\n"
-    (one-or-more " ") "L" line ":" column
-    (message (minimal-match (one-or-more not-newline)) "W" (one-or-more digit) (optional "\r") "\n"
-      (one-or-more not-newline)) (optional "\r") "\n" line-end)
-   (warning line-start
-    (file-name) ":" (one-or-more digit) " :" (optional "\r") "\n"
-    (one-or-more " ") "L" line ":" column
-    (message (minimal-match (one-or-more not-newline)) (not digit) (one-or-more digit) (optional "\r") "\n"
-      (one-or-more not-newline)) (optional "\r") "\n" line-end))
+          (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
+          (one-or-more " ") "L" line ":" column
+          (message (minimal-match (one-or-more not-newline)) (or "dodgy" "pyroma" "vulture") (one-or-more not-newline) (optional "\r") "\n"
+                   (one-or-more " ") (one-or-more not-newline)) (optional "\r") "\n" line-end))
   :modes python-mode)
 
 ;;;###autoload
