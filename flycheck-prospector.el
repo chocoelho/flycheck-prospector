@@ -4,6 +4,7 @@
 ;;
 ;; Author: Carlos Coelho <carlospecter@gmail.com>
 ;; Created: 23 May 2018
+;; URL: https://github.com/chocoelho/flycheck-prospector
 ;; Version: 0.1
 ;; Package-Requires: ((flycheck "0.22"))
 
