@@ -45,6 +45,17 @@
 ;;; Code:
 (require 'flycheck)
 
+(defun flycheck-prospector--find-working-directory (_checker)
+  "Look for a directory to run Prospector CHECKER in.
+
+This will be the directory that contains the `.prospector.yaml' file."
+  (let* ((regex-config (concat "\\`\\.prospector"
+                               "\\(\\.\\ya?ml\\)?\\'")))
+    (when buffer-file-name
+      (locate-dominating-file
+        (file-name-directory buffer-file-name)
+        (lambda (directory)
+          (> (length (directory-files directory nil regex-config t)) 0))))))
 
 (flycheck-define-checker python-prospector
   "A Python syntax and style checker using the prospector utility.
@@ -60,24 +71,25 @@ See URL `http://pypi.python.org/pypi/prospector'."
   ((error line-start
     (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
     (one-or-more " ") "L" line ":" column
-    (message (minimal-match (one-or-more not-newline)) (or "frosted" "pep8") "E" (one-or-more digit) (optional "\r") "\n"
+    (message (minimal-match (one-or-more not-newline)) "E" (one-or-more digit) (optional "\r") "\n"
       (one-or-more not-newline)) (optional "\r") "\n" line-end)
    (error line-start
-          (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
-          (one-or-more " ") "L" line ":" column
-          (message (minimal-match (one-or-more not-newline)) "pylint" (one-or-more not-newline) (optional "\r") "\n"
-                   (one-or-more " ") (one-or-more not-newline)) (optional "\r") "\n" line-end)
+     (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
+     (one-or-more " ") "L" line ":" column
+     (message (minimal-match (one-or-more not-newline)) "pylint" (one-or-more not-newline) (optional "\r") "\n"
+       (one-or-more not-newline)) (optional "\r") "\n" line-end)
    (warning line-start
-            (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") ":\n"
+    (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") ":\n"
     (one-or-more " ") "L" line ":" column
-    (message (minimal-match (one-or-more not-newline)) (or "frosted" "pep8") "W" (one-or-more digit) (optional "\r") "\n"
+    (message (minimal-match (one-or-more not-newline)) (or "W" "D") (one-or-more digit) (optional "\r") "\n"
       (one-or-more not-newline)) (optional "\r") "\n" line-end)
    (warning line-start
-          (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
-          (one-or-more " ") "L" line ":" column
-          (message (minimal-match (one-or-more not-newline)) (or "dodgy" "pyroma" "vulture") (one-or-more not-newline) (optional "\r") "\n"
-                   (one-or-more " ") (one-or-more not-newline)) (optional "\r") "\n" line-end))
-  :modes python-mode)
+     (file-name) ":" (one-or-more digit) ":" (one-or-more digit) ":" (optional "\r") "\n"
+     (one-or-more " ") "L" line ":" column
+     (message (minimal-match (one-or-more not-newline)) (optional "\r") "\n"
+       (one-or-more not-newline)) (optional "\r") "\n" line-end))
+  :modes python-mode
+  :working-directory flycheck-prospector--find-working-directory)
 
 ;;;###autoload
 (defun flycheck-prospector-setup ()
